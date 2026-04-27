@@ -1,29 +1,49 @@
 # Райн-ровер Telegram Mini App
 
-Миниапп для Telegram с ботом: приветственный экран, кнопка запуска, 15-секундная заглушка аналитики и экран статистики по макету Figma.
+Telegram Mini App без Node.js: Python backend отдаёт статический HTML/CSS/JS фронт и запускает Telegram-бота через long polling.
 
 ## Стек
 
-- React + Vite + TypeScript
-- Express
-- Telegraf
-- Node.js 20+
+- Python 3.10+
+- только стандартная библиотека Python
+- HTML + CSS + JavaScript
 
-## Локальный запуск веб-части
+## Структура
 
-```bash
-npm ci
-npm run dev
+```text
+app.py              # HTTP server + Telegram Bot API long polling
+web/index.html     # Mini App HTML
+web/styles.css     # Figma-like layout and animation
+web/app.js         # screen flow: welcome -> start -> loading -> result
+public/assets/     # локальные ассеты из Figma
+.env.example       # пример переменных окружения
 ```
 
-Vite откроет Mini App на `http://localhost:5173`.
+## Локальный запуск
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python app.py
+```
+
+Mini App откроется на `http://localhost:3000`.
+
+Проверка сервера:
+
+```bash
+curl http://localhost:3000/health
+```
+
+Если `.env` не заполнен, web-сервер всё равно стартует, но бот не запускается.
 
 ## Переменные окружения
 
-Создай `.env` по примеру:
+Создай `.env`:
 
 ```bash
 cp .env.example .env
+nano .env
 ```
 
 ```env
@@ -32,11 +52,11 @@ WEBAPP_URL=https://your-domain.example
 PORT=3000
 ```
 
-`WEBAPP_URL` должен быть публичным HTTPS-адресом. Telegram Mini Apps не открываются по обычному HTTP-домену в продакшене.
+`WEBAPP_URL` должен быть публичным HTTPS-адресом. Telegram Mini Apps в продакшене требуют HTTPS.
 
 ## Деплой на ВМ без Docker
 
-1. Установи Node.js 20+ и Git.
+1. Установи Python 3.10+ и Git.
 
 2. Склонируй репозиторий:
 
@@ -45,58 +65,29 @@ git clone https://github.com/ObamaObama444/-_-.git
 cd -_-
 ```
 
-3. Установи зависимости:
+3. Создай виртуальное окружение:
 
 ```bash
-npm ci
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-4. Создай `.env`:
+4. Заполни `.env`:
 
 ```bash
 cp .env.example .env
 nano .env
 ```
 
-5. Собери проект:
+5. Запусти приложение:
 
 ```bash
-npm run build
-```
-
-6. Запусти сервер и бота:
-
-```bash
-npm start
-```
-
-Проверка сервера:
-
-```bash
-curl http://localhost:3000/health
-```
-
-## Запуск через PM2
-
-```bash
-npm install -g pm2
-pm2 start npm --name ryan-rover -- start
-pm2 save
-pm2 startup
-```
-
-После изменения кода:
-
-```bash
-git pull
-npm ci
-npm run build
-pm2 restart ryan-rover
+python app.py
 ```
 
 ## Запуск через systemd
 
-Создай `/etc/systemd/system/ryan-rover.service`:
+Пример `/etc/systemd/system/ryan-rover.service`:
 
 ```ini
 [Unit]
@@ -106,16 +97,16 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/path/to/-_-
-ExecStart=/usr/bin/npm start
+ExecStart=/path/to/-_-/.venv/bin/python /path/to/-_-/app.py
 Restart=always
 RestartSec=5
-Environment=NODE_ENV=production
+Environment=PYTHONUNBUFFERED=1
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-Затем:
+Команды:
 
 ```bash
 sudo systemctl daemon-reload
@@ -124,10 +115,18 @@ sudo systemctl start ryan-rover
 sudo systemctl status ryan-rover
 ```
 
+После обновления кода:
+
+```bash
+git pull
+source .venv/bin/activate
+sudo systemctl restart ryan-rover
+```
+
 ## Telegram BotFather
 
 1. Создай бота через `@BotFather`.
-2. Сохрани токен в `BOT_TOKEN`.
-3. Укажи публичный HTTPS-адрес в `WEBAPP_URL`.
-4. Запусти приложение.
-5. Напиши боту `/start`: он отправит кнопку Mini App и установит кнопку меню.
+2. Запиши токен в `BOT_TOKEN`.
+3. Укажи публичный HTTPS-домен в `WEBAPP_URL`.
+4. Запусти `python app.py`.
+5. Напиши боту `/start`: он пришлёт кнопку Mini App и установит кнопку меню.
