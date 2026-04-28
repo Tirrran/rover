@@ -12,11 +12,33 @@ app.py              # HTTP server + Telegram Bot API long polling
 .env                # готовые переменные для бота и домена
 web/index.html      # HTML
 web/styles.css      # CSS
-web/app.js          # JS flow: welcome -> start -> loading -> result
+web/app.js          # JS flow + POST /api/start по кнопке "Начать"
 public/assets/      # ассеты из Figma
 ```
 
 Проект не требует Node.js, npm, pip и Docker. Нужен только Python 3.10+.
+
+## Переменные окружения
+
+Минимально необходимые:
+
+```text
+BOT_TOKEN=...
+WEBAPP_URL=https://your-domain
+ROBOT_CAMERA_URL=http://192.168.1.33:8889/cam/
+```
+
+Дополнительно:
+
+```text
+ROBOT_CAMERA_TIMEOUT_SEC=8
+ROBOT_MAX_FRAME_BYTES=3500000
+ROBOT_SCREENSHOT_CAPTION=Кадр с робота получен.
+INIT_DATA_MAX_AGE_SEC=86400
+DEFAULT_CHAT_ID=123456789  # опционально, fallback для отладки
+```
+
+Кнопка `Начать` в Mini App теперь вызывает `POST /api/start`: backend берёт кадр из `ROBOT_CAMERA_URL` и отправляет его в чат Telegram через `sendPhoto`.
 
 ## Быстрый деплой на ВМ
 
@@ -140,4 +162,6 @@ sudo systemctl restart ryan-rover
 1. Открой `https://t.me/RaianRoverYandex_bot`.
 2. Напиши `/start`.
 3. Нажми кнопку `Открыть Райн-ровер`.
-4. Если меню Telegram уже обновилось, можно открыть Mini App через кнопку меню бота.
+4. В Mini App нажми `Начать`.
+5. Проверь, что бот прислал фото в чат.
+6. Если меню Telegram уже обновилось, можно открыть Mini App через кнопку меню бота.

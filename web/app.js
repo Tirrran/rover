@@ -1,5 +1,6 @@
 const ANALYTICS_DURATION_MS = 15000;
 const WELCOME_DURATION_MS = 2400;
+const START_API_PATH = "/api/start";
 
 const screens = {
   welcome: document.querySelector('[data-screen="welcome"]'),
@@ -7,6 +8,7 @@ const screens = {
   loading: document.querySelector('[data-screen="loading"]'),
   result: document.querySelector('[data-screen="result"]'),
 };
+let started = false;
 
 function setupTelegram() {
   const webApp = window.Telegram?.WebApp;
@@ -27,8 +29,41 @@ function showScreen(name) {
   }
 }
 
+async function triggerRobotSnapshot() {
+  const webApp = window.Telegram?.WebApp;
+  const payload = {
+    initData: webApp?.initData ?? "",
+  };
+
+  const response = await fetch(START_API_PATH, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(details || `Request failed: ${response.status}`);
+  }
+
+  return response.json();
+}
+
 function startAnalytics() {
+  if (started) {
+    return;
+  }
+  started = true;
+
   showScreen("loading");
+
+  triggerRobotSnapshot()
+    .then(() => window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.("success"))
+    .catch((error) => {
+      console.error("Failed to request robot screenshot:", error);
+      window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.("error");
+    });
+
   window.setTimeout(() => showScreen("result"), ANALYTICS_DURATION_MS);
 }
 
