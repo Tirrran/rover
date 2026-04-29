@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#2f2f32" />
+    <title>Райн-ровер</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script defer src="/app.js"></script>
+  </head>
+  <body>
+    <main class="app-shell" aria-live="polite">
+      <section class="screen screen-welcome screen-enter" data-screen="welcome" aria-label="Приветственный экран">
+        <img class="welcome-ellipse" src="/assets/welcome-ellipse.svg" alt="" draggable="false" />
+        <img class="welcome-main" src="/assets/welcome-main.png" alt="" draggable="false" />
+        <h1 class="welcome-title">Райн-ровер</h1>
+      </section>
+
+      <section class="screen screen-start" data-screen="start" aria-label="Старт аналитики" hidden>
+        <img class="start-ellipse" src="/assets/start-ellipse.svg" alt="" draggable="false" />
+        <img class="start-main" src="/assets/start-main.png" alt="" draggable="false" />
+        <button class="start-button" type="button">Начать</button>
+      </section>
+
+      <section class="screen screen-loading" data-screen="loading" aria-label="Загрузка аналитики" hidden>
+        <div class="analytics-line"></div>
+        <img class="loading-rider" src="/assets/loading-rider.png" alt="" draggable="false" />
+        <p class="loading-title">Пошла аналитика...</p>
+      </section>
+
+      <section class="screen screen-result" data-screen="result" aria-label="Статистика" hidden>
+        <article class="stats-card">
+          <h2>Итого:</h2>
+          <dl>
+            <div class="stats-row">
+              <dt>мотоциклы:</dt>
+              <dd>00</dd>
+            </div>
+            <div class="stats-row">
+              <dt>машинка:</dt>
+              <dd>00</dd>
+            </div>
+            <div class="stats-row">
+              <dt>пончики:</dt>
+              <dd>00</dd>
+            </div>
+            <div class="stats-row">
+              <dt>яблоки:</dt>
+              <dd>00</dd>
+            </div>
+          </dl>
+        </article>
+        <img class="result-rover" src="/assets/result-rover.png" alt="" draggable="false" />
+      </section>
+    </main>
+  </body>
+</html>
